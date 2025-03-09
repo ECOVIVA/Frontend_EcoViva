@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Leaf, Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
-import { createAccount } from '../services/API/axios';
 import axios from 'axios';
 
 
