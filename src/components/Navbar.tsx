@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
       label: 'Programas',
       submenu: [
         { label: 'Reciclagem Diária', icon: Leaf, href: '/checkin' },
-        { label: 'Educação Ambiental', icon: Globe, href: '#' },
+        { label: 'Educação Ambiental', icon: Globe, href: '/ECOlições' },
         { label: 'Parcerias', icon: Users, href: '/ParceriasPage' },
       ]
     }
@@ -218,7 +218,7 @@ const Navbar: React.FC = () => {
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
-                          alt={user.name}
+                          alt={user.username}
                           className={`w-10 h-10 rounded-full border-2 transition-colors ${
                             isScrolled
                               ? 'border-green-400/50 group-hover:border-green-400'
@@ -237,7 +237,7 @@ const Navbar: React.FC = () => {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium">{user?.name}</p>
+                        <p className="font-medium">{user?.username}</p>
                         <p className={`text-xs ${
                           isScrolled ? 'text-green-400/80' : 'text-green-600/80'
                         }`}>Membro Ativo</p>
@@ -334,7 +334,7 @@ const Navbar: React.FC = () => {
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
-                          alt={user.name}
+                          alt={user.username}
                           className="w-10 h-10 rounded-full border-2 border-green-400/50"
                         />
                       ) : (
@@ -343,7 +343,7 @@ const Navbar: React.FC = () => {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium">{user?.name}</p>
+                        <p className="font-medium">{user?.username}</p>
                         <p className="text-sm text-green-400/80">Membro Ativo</p>
                       </div>
                     </Link>

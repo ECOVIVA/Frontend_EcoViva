@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Leaf, Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 
 
 
 function App() {
+  const navigator = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
@@ -44,7 +46,12 @@ function App() {
         formDataToSend.append("photo", formData.photo);
       };
 
-      const response = await axios.post('url_do_servidor', formDataToSend);
+      const response = await axios.post('http://127.0.0.1:8000/api/users/', formDataToSend);
+     
+      if (response.status === 201) {
+        alert("Usuário cadastrado com sucesso!");
+        navigator('/Login'); 
+      }
 
       if (response) {
         alert("Usuário cadastrado com sucesso!");

@@ -16,6 +16,7 @@ import ImpactPage from './pages/ImpactPage';
 import CertificatePage from './pages/CertificatePage';
 import ParceriaPage from './pages/ParceriasPage';
 import CreateAccount from './pages/CreateAccount';
+import ECOlições from './pages/ECOlições';
 
 function App() {
   const { isAuthenticated, initAuth } = useAuthStore(); 
@@ -44,6 +45,7 @@ function App() {
             <Route path="/CertificatePage" element={<CertificatePage />} />
             <Route path="/ParceriasPage" element={<ParceriaPage />} />
             <Route path="/CreateAccount" element={<CreateAccount />} />
+            <Route path="/ECOlições" element={<ECOlições />} />
           </Routes>
         </main>
         <Footer />

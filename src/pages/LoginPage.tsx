@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion';
+import axios from 'axios'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -11,40 +12,38 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
+  const { initAuth } = useAuthStore.getState();
+  initAuth();
 
   useEffect(() => { 
     // Verificar se o usuário já está autenticado ao carregar o componente
     initAuth();
     if (isAuthenticated) {
-      navigate('/checkin');
+      navigate('/CheckInPage');
     }
   }, [isAuthenticated, navigate]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    
     try {
-      const success = await login(email, password);
-
-      if (success) {
-        navigate('/checkin');
-      } else {
-        setError('Email ou senha incorretos. Tente novamente.');
-      }
-    } catch (err) {
-      setError('Ocorreu um erro ao fazer login. Tente novamente.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        email,
+        password,
+      });
+      console.log(response.data); // Sucesso na autenticação
+      navigate('/CheckInPage');
+    } catch (error) {
+      console.error('Erro de autenticação', error);
     }
   };
 
-  const { initAuth } = useAuthStore.getState(); 
-  initAuth();
 
   const handleSignUpClick = () => {
     const leaf = document.querySelector('.leaf-icon') as HTMLElement;
@@ -53,7 +52,7 @@ const LoginPage: React.FC = () => {
       leaf.style.transform = 'rotate(360deg)';
 
       setTimeout(() => {
-        navigate('/signup');
+        navigate('/LoginPage');
       }, 1000);
     }
   };
