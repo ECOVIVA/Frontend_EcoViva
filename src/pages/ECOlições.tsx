@@ -5,6 +5,11 @@ import Lesson2 from '../components/Lesson2';
 import Lesson3 from '../components/Lesson3';
 import Lesson4 from '../components/Lesson4';
 import Lesson5 from '../components/Lesson5';
+import Lesson6 from '../components/Lesson6';
+import Lesson7 from '../components/Lesson7';
+import Lesson8 from '../components/Lesson8';
+
+
 function App() {
   const [selectedLesson, setSelectedLesson] = React.useState<number | null>(null);
 
@@ -120,6 +125,19 @@ function App() {
   if (selectedLesson === 5) {
     // @ts-ignore
     return <Lesson5 onBack={() => setSelectedLesson(null)} />;
+  }
+
+  if (selectedLesson === 6) {
+    
+    return <Lesson6 onBack={() => setSelectedLesson(null)} />;
+  }
+  if (selectedLesson === 7) {
+     // @ts-ignore
+    return <Lesson7 onBack={() => setSelectedLesson(null)} />;
+  }
+  if (selectedLesson === 8) {
+   // @ts-ignore
+    return <Lesson8 onBack={() => setSelectedLesson(null)} />;
   }
 
   return (

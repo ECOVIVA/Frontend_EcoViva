@@ -1,11 +1,11 @@
-// authStore.ts
+
 import { create } from 'zustand';
 import { AuthState } from '../../types/types';  // Importando as interfaces
 import axios from 'axios';
 
 // Instância do Axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/users/',
+  baseURL: 'http://127.0.0.1:8000/api/user_create/',
   headers: {
     'Content-Type': 'application/json',
   },

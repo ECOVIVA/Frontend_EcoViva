@@ -46,7 +46,7 @@ function App() {
         formDataToSend.append("photo", formData.photo);
       };
 
-      const response = await axios.post('http://127.0.0.1:8000/api/users/', formDataToSend);
+      const response = await axios.post('http://127.0.0.1:8000/api/user_create/', formDataToSend);
      
       if (response.status === 201) {
         alert("Usuário cadastrado com sucesso!");
