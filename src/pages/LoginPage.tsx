@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion';
-import axios from 'axios'
+import axios from 'axios';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');  // Corrigido para ter a função de set
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -15,9 +15,8 @@ const LoginPage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const { initAuth } = useAuthStore.getState();
-  initAuth();
 
-  useEffect(() => { 
+  useEffect(() => {
     // Verificar se o usuário já está autenticado ao carregar o componente
     initAuth();
     if (isAuthenticated) {
@@ -25,25 +24,28 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    
     try {
-      const response = await axios.post('http://localhost:8000/api/login/', {
-        email,
+       
+      const response = await axios.post('http://localhost:8000/detail/<str:username>/', {
+        username,
         password,
       });
       console.log(response.data); // Sucesso na autenticação
+      const { access, user } = response.data;
+      document.cookie = `access_token=${access}; Max-Age=3600; path=/`;
       navigate('/CheckInPage');
     } catch (error) {
       console.error('Erro de autenticação', error);
+      setError('Credenciais inválidas. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
   };
-
 
   const handleSignUpClick = () => {
     const leaf = document.querySelector('.leaf-icon') as HTMLElement;
@@ -52,7 +54,7 @@ const LoginPage: React.FC = () => {
       leaf.style.transform = 'rotate(360deg)';
 
       setTimeout(() => {
-        navigate('/LoginPage');
+        navigate('/CreateAccount');
       }, 1000);
     }
   };
@@ -76,23 +78,23 @@ const LoginPage: React.FC = () => {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              Username
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}  // Corrigido para usar setUsername
                 className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="seu@email.com"
+                placeholder="Seu Username!"
               />
             </div>
           </div>

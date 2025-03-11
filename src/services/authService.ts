@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Defina a URL base da API para reutilizar no axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/users', // Corrigido para a URL base da API
+  baseURL: 'http://127.0.0.1:8000/api/user_create/', // Corrigido para a URL base da API
   headers: {
     'Content-Type': 'application/json',
   },

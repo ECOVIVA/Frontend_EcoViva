@@ -14,9 +14,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
 
-  login: async (email: string, password: string): Promise<boolean> => {
+  login: async (username: string, password: string): Promise<boolean> => {
     try {
-      const response = await loginUser(email, password);
+      const response = await loginUser(username, password);
 
       if (response?.token) { // Agora estamos checando pelo 'token' que o backend retorna
         // Criando um objeto de usuário baseado na resposta do backend.
