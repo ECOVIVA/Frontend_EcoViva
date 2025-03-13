@@ -27,8 +27,8 @@ const ForumPage: React.FC = () => {
     
     addPost(
       user.id,
-      user.name,
-      user.avatar,
+      user.username,
+      user.photo,
       newPostTitle,
       newPostContent
     );
@@ -55,8 +55,8 @@ const ForumPage: React.FC = () => {
     addComment(
       postId,
       user.id,
-      user.name,
-      user.avatar,
+      user.username,
+      user.photo,
       content
     );
     
@@ -251,16 +251,16 @@ const ForumPage: React.FC = () => {
                   <div className="border-t border-gray-100 p-4">
                     <form onSubmit={(e) => handleAddComment(post.id, e)}>
                       <div className="flex space-x-3">
-                        {user?.avatar ? (
+                        {user?.photo ? (
                           <img 
-                            src={user.avatar} 
-                            alt={user.name} 
+                            src={user.photo} 
+                            alt={user.username} 
                             className="w-8 h-8 rounded-full mt-1"
                           />
                         ) : (
                           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mt-1">
                             <span className="text-green-800 font-semibold text-sm">
-                              {user?.name.charAt(0)}
+                              {user?.username.charAt(0)}
                             </span>
                           </div>
                         )}

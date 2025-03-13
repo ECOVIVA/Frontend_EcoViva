@@ -11,16 +11,16 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, isAuthenticated, initAuth } = useAuthStore(); // Pegue initAuth da store
   const navigate = useNavigate();
 
-  useEffect(() => { 
+  useEffect(() => {
     // Verificar se o usuário já está autenticado ao carregar o componente
-    initAuth();
+    initAuth();  // Agora apenas no useEffect
     if (isAuthenticated) {
       navigate('/checkin');
     }
-  }, [isAuthenticated, navigate]);
+  }, [initAuth, isAuthenticated, navigate]); // Só chamar uma vez e garantir a atualização do estado
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,9 +42,6 @@ const LoginPage: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  const { initAuth } = useAuthStore.getState(); 
-  initAuth();
 
   const handleSignUpClick = () => {
     const leaf = document.querySelector('.leaf-icon') as HTMLElement;

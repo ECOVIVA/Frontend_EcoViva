@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Leaf, Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
-import axios from 'axios';
-
-
+import {useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
 
 
 function App() {
@@ -17,9 +16,13 @@ function App() {
     photo: null as File | null,
   });
 
+  const { login } = useAuthStore(); // Pegue initAuth da store
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +47,20 @@ function App() {
         formDataToSend.append("photo", formData.photo);
       };
 
-      const response = await axios.post('url_do_servidor', formDataToSend);
+      const response = await fetch('http://localhost:8000/api/users/create/',{
+        method: 'POST',
+        body: formDataToSend,
+        credentials: 'include'
+      });
 
-      if (response) {
-        alert("Usuário cadastrado com sucesso!");
+      if (response.status == 201) {
+        setIsLoading(true);
+          const success = await login(formData.email, formData.password);
+          if (success) {
+            navigate('/checkin');
+          } else {
+            setError('Email ou senha incorretos. Tente novamente.');
+          };
       }
     } catch (err) {
       setError("Ocorreu um erro ao criar a conta. Tente novamente.");
