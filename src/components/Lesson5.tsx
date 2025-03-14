@@ -790,7 +790,7 @@ const EcoQuiz = () => {
       <header className="bg-gradient-to-r from-green-600 to-teal-500 text-white p-4 shadow-md relative z-10">
         <div className="container mx-auto flex items-center justify-between">
           <button 
-            onClick={() => window.location.href = "/"} 
+            onClick={() => window.location.href = "/ECOlições"} 
             className="flex items-center gap-2 p-2 hover:bg-green-700 rounded-lg transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

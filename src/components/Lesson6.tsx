@@ -265,13 +265,10 @@ export default function Lesson6({ onBack }: Props) {
       <header className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-8 px-4">
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
-            <button 
-              onClick={onBack}
-              className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span>Voltar</span>
-            </button>
+            <button onClick={onBack} className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                        <ArrowLeft className="h-5 w-5" />
+                        <span>Voltar</span>
+                      </button>
             <div className="flex items-center gap-2">
               <Zap className="h-8 w-8" />
               <h1 className="text-2xl font-bold">EcoStudy</h1>

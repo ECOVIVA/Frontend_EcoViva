@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
 import { motion } from 'framer-motion';
+import { AuthContext } from '../components/AuthContext';
 import axios from 'axios';
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');  // Corrigido para ter a função de set
+  const [Email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Adicionando estado para mostrar/esconder senha
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
-  const { initAuth } = useAuthStore.getState();
+  const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    // Verificar se o usuário já está autenticado ao carregar o componente
-    initAuth();
-    if (isAuthenticated) {
-      navigate('/CheckInPage');
-    }
-  }, [isAuthenticated, navigate]);
+  // Verifica se o contexto foi corretamente inicializado
+  if (!authContext) {
+    return <div>Contexto não encontrado. Verifique se você envolveu o componente com o AuthProvider.</div>;
+  }
+
+  const { login } = authContext;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,33 +27,50 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
+      const response = await axios.post(
+        'http://localhost:8000/api/login/',
+        { email: Email, password: password },
+        { withCredentials: true }
+      );
+
+      const { access_token, refresh_token } = response.data;
+
+      // Passando o token correto para o login
+      login(access_token);
+
+      // Armazenando os tokens no localStorage
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('refresh_token', refresh_token);
+
+      // Após o login, verificando o perfil do usuário
+      const getProfileData = async (username: any) => {
+        try {
+          const response = await axios.get(`http://localhost:8000/api/detail/${username}/`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+          });
+          return response.data; // Retorna os dados da resposta, caso precise usar
+        } catch (error) {
+          console.error('Erro ao buscar dados do perfil:', error);
+        }
+      };
+
        
-      const response = await axios.post('http://localhost:8000/detail/<str:username>/', {
-        username,
-        password,
-      });
-      console.log(response.data); // Sucesso na autenticação
-      const { access, user } = response.data;
-      document.cookie = `access_token=${access}; Max-Age=3600; path=/`;
-      navigate('/CheckInPage');
-    } catch (error) {
+
+      navigate('/'); // Redireciona para a página principal
+    } catch (error: any) {
       console.error('Erro de autenticação', error);
-      setError('Credenciais inválidas. Tente novamente.');
+      if (error.response && error.response.data) {
+        setError(error.response.data.detail || 'Credenciais inválidas. Tente novamente.');
+      } else {
+        setError('Ocorreu um erro inesperado. Tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSignUpClick = () => {
-    const leaf = document.querySelector('.leaf-icon') as HTMLElement;
-    if (leaf) {
-      leaf.style.transition = 'transform 1s ease-in-out';
-      leaf.style.transform = 'rotate(360deg)';
-
-      setTimeout(() => {
-        navigate('/CreateAccount');
-      }, 1000);
-    }
+    navigate('/CreateAccount'); // Navega diretamente para a página de criação de conta
   };
 
   return (
@@ -78,23 +92,23 @@ const LoginPage: React.FC = () => {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+            <label htmlFor="Email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Mail className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                id="username"
-                name="username"
-                type="text"
+                id="Email"
+                name="Email"
+                type="email"
                 autoComplete="username"
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}  // Corrigido para usar setUsername
+                value={Email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Seu Username!"
+                placeholder="Seu Username"
               />
             </div>
           </div>
@@ -110,7 +124,7 @@ const LoginPage: React.FC = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 required
                 value={password}
@@ -124,11 +138,7 @@ const LoginPage: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="text-gray-400 hover:text-gray-500 focus:outline-none"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
@@ -138,10 +148,9 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg
-                        shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                        ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
               {isLoading ? 'Entrando...' : 'Entrar'}
             </button>

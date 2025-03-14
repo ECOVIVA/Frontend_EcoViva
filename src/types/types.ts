@@ -1,12 +1,15 @@
+// types/types.ts
 export interface User {
-  id: string;
+  id: number;
   username: string;
-  email: string;
-  avatar?: string;
   first_name: string;
   last_name: string;
+  email: string;
   phone: string;
+  avatar: string;
+  role?: string;
 }
+
 
 export interface CheckIn {
   id: string;
@@ -16,6 +19,7 @@ export interface CheckIn {
 }
 
 export interface ForumPost {
+  tags: any;
   id: string;
   userId: string;
   userName: string;

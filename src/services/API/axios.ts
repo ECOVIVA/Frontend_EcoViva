@@ -4,17 +4,31 @@ import axios from 'axios';
 
 // Instância do Axios
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',  // URL da sua API
+  baseURL: 'http://127.0.0.1:8000/user/create/',  // URL da sua API
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,  // Habilita o envio de cookies em todas as requisições
 });
 
+// Adicionando um interceptor para incluir o token em todas as requisições.
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Função de login
-const loginUser = async (username: string, password: string) => {
+const loginUser = async (Email: string, password: string) => {
   try {
-    const response = await api.post('/token/', { username, password });
+    const response = await api.post('/token/', { Email, password });
     const { access, user } = response.data;
     
     // Armazenar o token no localStorage para persistência
@@ -54,9 +68,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
 
   // Função de login com axios
-  login: async (username: string, password: string) => {
+  login: async (Email: string, password: string) => {
     try {
-      const { user, access } = await loginUser(username, password);
+      const { user, access } = await loginUser(Email, password);
       set({ user, isAuthenticated: true });
       return true;
     } catch (error) {
@@ -72,10 +86,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   // Função para inicializar a autenticação
-  initAuth: () => {
+  initAuth: async () => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      set({ isAuthenticated: true });
+      try {
+        // Verifique se o token é válido com um endpoint de verificação
+        await api.get('/me');  // Endpoint exemplo de verificação
+        set({ isAuthenticated: true });
+      } catch (error) {
+        console.error('Token inválido ou expirado');
+        localStorage.removeItem('authToken');
+        set({ isAuthenticated: false });
+      }
     }
   },
 

@@ -1,108 +1,72 @@
 import axios from 'axios';
 
-// Defina a URL base da API para reutilizar no axios
+// Instância do axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/user_create/', // Corrigido para a URL base da API
+  baseURL: 'http://127.0.0.1:8000/api/users/', 
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Permite enviar cookies nas requisições
 });
 
-// Interface para a resposta de login
-interface LoginResponse {
-  user: {
-    id: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    photos?: string;
-  };
-  token: string;
-}
-
-// Função para fazer login
-export const loginUser = async (email: string, password: string): Promise<LoginResponse | null> => {
+// Função de login
+export const loginUser = async (Email: string, password: string) => {
   try {
-    // Enviar requisição POST para a API de login
-    const response = await api.post('/auth/login', { email, password }); // Corrigido o caminho da API
+    const response = await api.post('/token/', { Email, password });
+    const { access, refresh } = response.data;
 
-    // Verificar se a resposta contém o token
-    if (response.data && response.data.token) {
-      // Armazenar o token e dados do usuário no localStorage
-      localStorage.setItem('token', response.data.token); // Armazenando o token
-      localStorage.setItem('user', JSON.stringify(response.data.user)); // Armazenando o usuário
+    // Armazenando os tokens no cookie
+    document.cookie = `access_token=${access}; Max-Age=3600; path=/`;
+    document.cookie = `refresh_token=${refresh}; Max-Age=86400; path=/`;
 
-      return response.data; // Retornar os dados do usuário e o token
-    }
-
-    return null; // Caso o login falhe
+    console.log('Login bem-sucedido!');
+    return response.data; // Retorna os tokens
   } catch (error) {
     console.error('Erro ao fazer login:', error);
-    return null;
+    throw new Error('Usuário ou senha inválidos');
   }
 };
 
-// Função para fazer logout
-export const logout = (): void => {
-  localStorage.removeItem('token'); // Remove o token ao deslogar
-  localStorage.removeItem('user'); // Remove os dados do usuário
-};
-
-// Função para obter o usuário atual
-export const getCurrentUser = (): object | null => {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null; // Retorna o usuário armazenado ou null se não existir
-};
-
-// Função para verificar se o usuário está autenticado
-export const isAuthenticated = (): boolean => {
-  // Retorna true se houver um token válido no localStorage
-  return !!localStorage.getItem('token');
-};
-
-// Função para realizar a verificação de validade do token no backend
-export const validateToken = async (): Promise<boolean> => {
+// Função para renovar o token de acesso
+export const refreshAccessToken = async () => {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return false; // Se não houver token, retorna false
-    }
+    const refreshToken = getRefreshTokenFromCookie();
+    const response = await api.post('/token/refresh/', { refresh: refreshToken });
 
-    // Realiza a validação do token com a API (Exemplo de endpoint)
-    const response = await api.post('/auth/validate', { token });
+    // Atualizando o token de acesso
+    const { access } = response.data;
+    api.defaults.headers['Authorization'] = `Bearer ${access}`;
+    document.cookie = `access_token=${access}; Max-Age=3600; path=/`;
 
-    if (response.data && response.data.isValid) {
-      return true; // Se o token for válido
-    }
-
-    return false; // Se o token não for válido
+    console.log('Token de acesso renovado');
+    return response.data; // Retorna o novo token
   } catch (error) {
-    console.error('Erro ao validar token:', error);
-    return false;
+    console.error('Erro ao renovar o token:', error);
+    throw new Error('Falha ao renovar o token');
   }
 };
 
-// Função para atualizar o token (caso o backend permita)
-export const refreshToken = async (): Promise<string | null> => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return null; // Se não houver token, retorna null
-    }
+// Função para obter o refresh token armazenado
+const getRefreshTokenFromCookie = () => {
+  const cookies = document.cookie.split('; ');
+  const refreshToken = cookies.find(cookie => cookie.startsWith('refresh_token='));
+  return refreshToken ? refreshToken.split('=')[1] : null;
+};
 
-    // Realiza o refresh token na API (Exemplo de endpoint)
-    const response = await api.post('/auth/refresh-token', { token });
+// Função para obter o access token armazenado
+const getAccessTokenFromCookie = () => {
+  const cookies = document.cookie.split('; ');
+  const accessToken = cookies.find(cookie => cookie.startsWith('access_token='));
+  return accessToken ? accessToken.split('=')[1] : null;
+};
 
-    if (response.data && response.data.token) {
-      localStorage.setItem('token', response.data.token); // Atualiza o token no localStorage
-      return response.data.token; // Retorna o novo token
-    }
+export const logoutUser = () => {
+  document.cookie = `access_token=; Max-Age=0; path=/; Secure; HttpOnly; SameSite=Strict`;
+  document.cookie = `refresh_token=; Max-Age=0; path=/; Secure; HttpOnly; SameSite=Strict`;
+  console.log('Usuário deslogado');
+};
 
-    return null; // Se o refresh não for bem-sucedido
-  } catch (error) {
-    console.error('Erro ao atualizar o token:', error);
-    return null;
-  }
+export const isAuthenticated = () => {
+  const token = getAccessTokenFromCookie();
+  return !!token; // Retorna true se o token de acesso existir
 };

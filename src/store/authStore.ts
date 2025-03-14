@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { User } from '../types/types';
-import { loginUser } from '../services/authService'; // Certifique-se de que este caminho esteja correto.
+import { User as UserType } from '../types/types';
+import { loginUser } from '../services/authService';
 
 interface AuthState {
-  user: User | null;
+  user: UserType | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
@@ -13,55 +13,54 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-
-  login: async (username: string, password: string): Promise<boolean> => {
+  login: async (email, password) => {
     try {
-      const response = await loginUser(username, password);
-
-      if (response?.token) { // Agora estamos checando pelo 'token' que o backend retorna
-        // Criando um objeto de usuário baseado na resposta do backend.
-        const user: User = {
-          id: response.user.id,               // Identificador único
-          username: response.user.username,   // Nome de usuário único
-          first_name: response.user.first_name, // Primeiro nome
-          last_name: response.user.last_name,   // Sobrenome
-          email: response.user.email,         // Email
-          phone: response.user.phone,         // Número de telefone
-          avatar: response.user.photos        // Imagem do perfil
+      const response = await loginUser(email, password);
+      if (response?.token) {
+        const user: UserType = {
+          id: response.user.id,
+          username: response.user.username,
+          first_name: response.user.first_name,
+          last_name: response.user.last_name,
+          email: response.user.email,
+          phone: response.user.phone,
+          avatar: response.user.avatar, // Certifique-se de que o avatar seja recebido corretamente
+          role: response.user.role,
         };
+console.log('User logged in:', user);
 
         set({ user, isAuthenticated: true });
-        localStorage.setItem('ecovivaUser', JSON.stringify(user)); // Salva o usuário no localStorage
+        localStorage.setItem('ecovivaUser', JSON.stringify(user));
 
         return true;
       } else {
-        return false; // Caso o 'token' não seja retornado
+        return false;
       }
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      return false; // Se ocorrer algum erro na tentativa de login
+      return false;
     }
   },
-
-  logout: (): void => {
+  logout: () => {
     set({ user: null, isAuthenticated: false });
-    localStorage.removeItem('ecovivaUser'); // Remove o usuário do localStorage ao deslogar
+    localStorage.removeItem('ecovivaUser');
   },
-
-  initAuth: (): void => {
+  initAuth: () => {
     const storedUser = localStorage.getItem('ecovivaUser');
-
+    console.log('Stored User in localStorage:', storedUser);  // Adicionei este log para depuração
+  
     if (storedUser) {
       try {
-        const user: User = JSON.parse(storedUser); // Recupera o usuário salvo no localStorage
+        const user: UserType = JSON.parse(storedUser);
+        console.log('Parsed User:', user);  // Log do usuário após o parse
         set({ user, isAuthenticated: true });
       } catch (error) {
         console.error('Erro ao processar usuário salvo:', error);
-        localStorage.removeItem('ecovivaUser'); // Remove o item se houver erro ao recuperar
+        localStorage.removeItem('ecovivaUser');
       }
     }
-  }
+  },
 }));
 
-// Inicializar autenticação ao carregar a aplicação
+// Inicializar a autenticação assim que a aplicação for carregada
 useAuthStore.getState().initAuth();

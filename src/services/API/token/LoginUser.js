@@ -12,9 +12,9 @@ const api = axios.create({
 
 
 // Função para login do usuário.
-const loginUser = async (email, password) => {
+const loginUser = async (Email, password) => {
   try {
-    const response = await api.post('/token/', { email, password });
+    const response = await api.post('/token/', { Email, password });
     const { access, refresh } = response.data;
 
     // Armazenando o token de acesso e refresh no cookie.

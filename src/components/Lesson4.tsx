@@ -3,11 +3,11 @@ import { ArrowLeft, Info, Check, Award, AlertTriangle, Droplets, BarChart3, Time
 
 // Enhanced puzzle pieces with additional properties
 const puzzlePieces = [
-  { 
-    id: 1, 
-    text: "Fechar a torneira enquanto escova os dentes", 
-    saving: 12, 
-    icon: "💧", 
+  {
+    id: 1,
+    text: "Fechar a torneira enquanto escova os dentes",
+    saving: 12,
+    icon: "💧",
     unit: "litros/dia",
     difficulty: "fácil",
     impact: "médio",
@@ -15,11 +15,11 @@ const puzzlePieces = [
     initialInvestment: 0,
     monthlyReturn: 5,
   },
-  { 
-    id: 2, 
-    text: "Reduzir o tempo do banho em 5 minutos", 
-    saving: 90, 
-    icon: "🚿", 
+  {
+    id: 2,
+    text: "Reduzir o tempo do banho em 5 minutos",
+    saving: 90,
+    icon: "🚿",
     unit: "litros/dia",
     difficulty: "médio",
     impact: "alto",
@@ -27,11 +27,11 @@ const puzzlePieces = [
     initialInvestment: 0,
     monthlyReturn: 25,
   },
-  { 
-    id: 3, 
-    text: "Usar a máquina de lavar roupa apenas com carga completa", 
-    saving: 100, 
-    icon: "👕", 
+  {
+    id: 3,
+    text: "Usar a máquina de lavar roupa apenas com carga completa",
+    saving: 100,
+    icon: "👕",
     unit: "litros/lavagem",
     difficulty: "fácil",
     impact: "alto",
@@ -39,11 +39,11 @@ const puzzlePieces = [
     initialInvestment: 0,
     monthlyReturn: 30,
   },
-  { 
-    id: 4, 
-    text: "Consertar vazamentos de torneiras", 
-    saving: 40, 
-    icon: "🔧", 
+  {
+    id: 4,
+    text: "Consertar vazamentos de torneiras",
+    saving: 40,
+    icon: "🔧",
     unit: "litros/dia",
     difficulty: "médio",
     impact: "médio",
@@ -51,11 +51,11 @@ const puzzlePieces = [
     initialInvestment: 50,
     monthlyReturn: 15,
   },
-  { 
-    id: 5, 
-    text: "Reutilizar água da chuva para plantas", 
-    saving: 200, 
-    icon: "🌧️", 
+  {
+    id: 5,
+    text: "Reutilizar água da chuva para plantas",
+    saving: 200,
+    icon: "🌧️",
     unit: "litros/mês",
     difficulty: "difícil",
     impact: "alto",
@@ -63,11 +63,11 @@ const puzzlePieces = [
     initialInvestment: 200,
     monthlyReturn: 50,
   },
-  { 
-    id: 6, 
-    text: "Usar regador em vez de mangueira no jardim", 
-    saving: 50, 
-    icon: "🌱", 
+  {
+    id: 6,
+    text: "Usar regador em vez de mangueira no jardim",
+    saving: 50,
+    icon: "🌱",
     unit: "litros/dia",
     difficulty: "fácil",
     impact: "médio",
@@ -75,11 +75,11 @@ const puzzlePieces = [
     initialInvestment: 30,
     monthlyReturn: 20,
   },
-  { 
-    id: 7, 
-    text: "Instalar aeradores nas torneiras", 
-    saving: 30, 
-    icon: "🚰", 
+  {
+    id: 7,
+    text: "Instalar aeradores nas torneiras",
+    saving: 30,
+    icon: "🚰",
     unit: "litros/dia",
     difficulty: "médio",
     impact: "médio",
@@ -87,11 +87,11 @@ const puzzlePieces = [
     initialInvestment: 40,
     monthlyReturn: 12,
   },
-  { 
-    id: 8, 
-    text: "Usar descarga com duplo acionamento", 
-    saving: 70, 
-    icon: "🚽", 
+  {
+    id: 8,
+    text: "Usar descarga com duplo acionamento",
+    saving: 70,
+    icon: "🚽",
     unit: "litros/dia",
     difficulty: "difícil",
     impact: "alto",
@@ -159,7 +159,7 @@ export default function Lesson4({ onBack }: Props) {
 
   const checkAchievements = () => {
     const newAchievements: string[] = [];
-    
+
     if (waterSaved >= targetSaving * 1.5) {
       newAchievements.push("Super Econômico 🌟");
     }
@@ -203,13 +203,13 @@ export default function Lesson4({ onBack }: Props) {
       setScore((prev) => prev + 10);
       setBudget((prev) => prev - piece.initialInvestment);
       setStreak((prev) => prev + 1);
-      
+
       const monthlyReturn = piece.monthlyReturn;
       setTimeout(() => {
         setBudget((prev) => prev + monthlyReturn);
         showToast('Retorno Mensal! 💰', `+${monthlyReturn} reais de economia!`, true);
       }, 5000);
-      
+
       showToast('Boa escolha! 🎯', `Esta ação economiza ${piece.saving} ${piece.unit}`, true);
     }
 
@@ -269,9 +269,8 @@ export default function Lesson4({ onBack }: Props) {
 
   const showToast = (title: string, message: string, success: boolean) => {
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg transform transition-all duration-500 ${
-      success ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-rose-600'
-    } text-white z-50 backdrop-blur-sm`;
+    toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg transform transition-all duration-500 ${success ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-rose-600'
+      } text-white z-50 backdrop-blur-sm`;
     toast.innerHTML = `
       <h4 class="font-bold">${title}</h4>
       <p>${message}</p>
@@ -334,7 +333,7 @@ export default function Lesson4({ onBack }: Props) {
             <ArrowLeft className="h-5 w-5" />
             <span>Voltar</span>
           </button>
-          
+
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <Timer className="h-5 w-5" />
@@ -342,12 +341,12 @@ export default function Lesson4({ onBack }: Props) {
                 {formatTime(timeLeft)}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5" />
               <span>{score} pts</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               <span>{streak}x</span>
@@ -369,11 +368,9 @@ export default function Lesson4({ onBack }: Props) {
                 <Droplets className="h-7 w-7" />
                 Lição 4: Economia de Água
               </h2>
-              <button
-                onClick={() => setShowInfo(!showInfo)}
-                className="p-3 hover:bg-blue-50 rounded-full transition-colors"
-              >
-                <Info className="h-7 w-7 text-blue-600" />
+              <button onClick={onBack} className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                <ArrowLeft className="h-5 w-5" />
+                <span>Voltar</span>
               </button>
             </div>
 
@@ -424,11 +421,10 @@ export default function Lesson4({ onBack }: Props) {
                       id={`piece-${piece.id}`}
                       onClick={() => handlePieceSelect(piece.id)}
                       disabled={timeLeft === 0}
-                      className={`w-full p-4 rounded-lg border-2 flex items-center gap-3 transition-all transform hover:scale-102 hover:shadow-md ${
-                        selectedPieces.includes(piece.id)
+                      className={`w-full p-4 rounded-lg border-2 flex items-center gap-3 transition-all transform hover:scale-102 hover:shadow-md ${selectedPieces.includes(piece.id)
                           ? "bg-gradient-to-r from-blue-50 to-blue-100 border-blue-400 shadow-inner"
                           : "bg-white border-gray-200 hover:border-blue-300"
-                      } ${timeLeft === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        } ${timeLeft === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <div className="text-2xl transform transition-transform duration-300 hover:scale-110">
                         {piece.icon}

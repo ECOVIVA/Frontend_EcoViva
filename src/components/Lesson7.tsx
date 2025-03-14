@@ -1241,7 +1241,8 @@ export default function Lesson7() {
                                 </div>
                               </div>
                               
-                              {/* Product badges */}
+                              
+                                
                               <div className="flex flex-wrap gap-1 mt-2">
                                 {product.badges.map((badge, index) => (
                                   <span 
