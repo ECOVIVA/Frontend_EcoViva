@@ -3,6 +3,7 @@ import { Leaf, Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+
 function App() {
   const navigator = useNavigate();
 
@@ -43,28 +44,30 @@ function App() {
         phone: formData.phone,
         password: formData.password,
       };
-
+     
+    
       const response = await axios.post('http://127.0.0.1:8000/api/users/create/', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true, // Se você estiver lidando com cookies de sessão
       });
+      
+   if (response.status === 201) {
+      // Se houver uma foto, fazer o upload
+      if (formData.photo) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("photo", formData.photo);
 
-      // Se os dados do usuário forem criados com sucesso, enviar a foto
-      if (response.status === 201) {
-        if (formData.photo) {
-          const formDataToSend = new FormData();
-          formDataToSend.append('photo', formData.photo);
-
-          await axios.post(`http://127.0.0.1:8000/api/users/${formData.username}/upload-photo/`, formDataToSend, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+        await axios.post(
+          `http://127.0.0.1:8000/api/users/upload-photo/`, // Usando o ID em vez do username
+          formDataToSend,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true,
-          });
-        }
-        
+          }
+        );
+      }
         alert("Usuário cadastrado com sucesso!");
         navigator('/CheckInpage');
       }

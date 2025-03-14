@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
   };
 
   const navbarClass = `fixed w-full z-50 transition-all duration-500 ${
-    isScrolled ? 'bg-green-900/95 backdrop-blur-lg shadow-[0_0_20px_rgba(0,0,0,0.3)] py-2' : 'bg-white/80 backdrop-blur-sm shadow-sm py-4'
+    isScrolled ? 'bg-green-900/100 backdrop-blur-lg shadow-[0_0_20px_rgba(0,0,0,0.3)] py-5' : 'bg-white/90 backdrop-blur-sm py-1'
   }`;
 
   const menuItems = [
@@ -89,9 +89,9 @@ const Navbar: React.FC = () => {
   return (
     <>
       <nav className={navbarClass}>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           <div className="flex justify-between items-center">
-            <Link to="/" className="flex items-center space-x-3 group">
+            <Link to="/" className="flex items-center space-1 group">
               <div className="relative">
                 <div className={`absolute inset-0 rounded-full blur-[5px] group-hover:blur-[5px] transition-all duration-300 ${
                   isScrolled ? 'bg-green-300/50' : 'bg-green-400/50'
@@ -151,7 +151,7 @@ const Navbar: React.FC = () => {
                       } ${isDropdownExiting ? 'dropdown-exit' : 'dropdown-enter'}`}
                     >
                       <div className="py-2">
-                        {item.submenu.map((subItem) => (
+                        {item.submenu.map((subItem: { label: boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<React.AwaitedReactNode> | React.Key | null | undefined; href: unknown; icon: any; }) => (
                           <Link
                             key={subItem.label}
                             to={subItem.href}
@@ -194,7 +194,7 @@ const Navbar: React.FC = () => {
                 {isAuthenticated ? (
                   <>
                     <Link
-                      to="/profile"
+                      to="/ProfilePage"
                       className={`flex items-center space-x-3 transition-colors group ${
                         isScrolled ? 'text-gray-300 hover:text-green-400' : 'text-gray-800 hover:text-green-600'
                       }`}

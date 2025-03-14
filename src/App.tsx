@@ -18,6 +18,7 @@ import CertificatePage from './pages/CertificatePage';
 import ParceriaPage from './pages/ParceriasPage';
 import CreateAccount from './pages/CreateAccount';
 import ECOlições from './pages/ECOlições';
+import ProfilePage from './pages/ProfilePage';
 
 const App: React.FC = () => {
   const { initAuth } = useAuthStore();
@@ -44,6 +45,7 @@ const App: React.FC = () => {
             <Route path="/CreateAccount" element={<CreateAccount />} />
             <Route path="/ECOlições" element={<ECOlições />} />
             <Route path="/CheckInPage" element={<CheckInPage />} />
+            <Route path="/ProfilePage" element={<ProfilePage />} />
             
           </Routes>
         </main>
