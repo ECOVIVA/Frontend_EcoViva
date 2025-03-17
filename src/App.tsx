@@ -17,7 +17,7 @@ import ImpactPage from './pages/ImpactPage';
 import CertificatePage from './pages/CertificatePage';
 import ParceriaPage from './pages/ParceriasPage';
 import CreateAccount from './pages/CreateAccount';
-import ECOlições from './pages/ECOlições';
+import ECOlições from './pages/ECOstudy';
 import ProfilePage from './pages/ProfilePage';
 
 const App: React.FC = () => {
