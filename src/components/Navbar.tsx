@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
   };
 
   const navbarClass = `fixed w-full z-50 transition-all duration-500 ${
-    isScrolled ? 'bg-green-800/95 shadow-md backdrop-blur-lg py-2' : 'bg-white/80 py-4'
+    isScrolled ? 'bg-green-800/95 shadow-md backdrop-blur-lg py-2' : 'bg-white/80 py-2'
   }`;
 
   const menuItems = [
