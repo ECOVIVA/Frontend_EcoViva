@@ -35,8 +35,8 @@ const Navbar: React.FC = () => {
     };
   }, [isMobileMenuOpen]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async() => {
+    await logout();
     navigate('/');
   };
 

@@ -20,9 +20,9 @@ export interface Rank {
 
 export interface CheckIn {
   id: string;
-  comment: string;
-  timestamp: Date;
-  xpEarned: number;
+  description: string;
+  created_at: Date;
+  xp_earned: number;
 }
 
 export interface UserProgress {

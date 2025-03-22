@@ -5,6 +5,7 @@ import { CheckInBubble } from '../components/CheckInBubble';
 import { RankCarousel } from '../components/RankCarousel';
 import { ranks } from './data/ranks';
 import { CheckIn, UserProgress } from '../types/types';
+import AuthGuardian from '@/components/AuthGuardian';
 
 function App() {
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -46,12 +47,13 @@ function App() {
           method: 'GET',
           credentials: 'include'
         });
+
         if (response.ok) {
           const bubble = await response.json();
           setUserProgress({
-            currentXP: bubble.currentXP,
-            currentRank: bubble.currentRank.id,
-            checkIns: bubble.checkIns || [],
+            currentXP: bubble.progress,
+            currentRank: bubble.rank.id,
+            checkIns: bubble.check_ins || [],
           });
         } else {
           console.error("Erro ao buscar dados da bolha.");
@@ -76,7 +78,7 @@ function App() {
       const newCheckIn: CheckIn = await response.json();
       setUserProgress(prev => ({
         ...prev,
-        currentXP: prev.currentXP + newCheckIn.xpEarned,
+        currentXP: prev.currentXP + newCheckIn.xp_earned,
         checkIns: [newCheckIn, ...prev.checkIns],
       }));
     } else {
@@ -88,6 +90,7 @@ function App() {
   const nextRank = getNextRank();
 
   return (
+    <AuthGuardian>
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
@@ -122,6 +125,7 @@ function App() {
         </div>
       </div>
     </div>
+    </AuthGuardian>
   );
 }
 
