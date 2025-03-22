@@ -45,6 +45,7 @@ console.log('User logged in:', user);
     set({ user: null, isAuthenticated: false });
     localStorage.removeItem('ecovivaUser');
   },
+  
   initAuth: () => {
     const storedUser = localStorage.getItem('ecovivaUser');
     console.log('Stored User in localStorage:', storedUser);  // Adicionei este log para depuração

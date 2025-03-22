@@ -7,7 +7,6 @@ import { ranks } from './data/ranks';
 import { CheckIn, UserProgress } from '../types/types';
 
 function App() {
-  const username = "usuario_logado"; // Este deve ser o nome de usuário atual do sistema
   const [userProgress, setUserProgress] = useState<UserProgress>({
     currentXP: 0,
     currentRank: 1,
@@ -43,7 +42,10 @@ function App() {
   useEffect(() => {
     const fetchBubbleData = async () => {
       try {
-        const response = await fetch(`/api/bubble/${username}/`);
+        const response = await fetch(`http://localhost:8000/api/users/bubble/profile/`, {
+          method: 'GET',
+          credentials: 'include'
+        });
         if (response.ok) {
           const bubble = await response.json();
           setUserProgress({
@@ -60,14 +62,14 @@ function App() {
     };
 
     fetchBubbleData();
-  }, [username]);
+  }, []);
 
   const handleCheckIn = async (comment: string) => {
-    const xpEarned = getXPForCurrentRank();
-    const response = await fetch(`/api/bubble/${username}/check-in/create/`, {
+    const response = await fetch(`http://localhost:8000/api/users/bubble/check-in/create/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ comment, xpEarned }),
+      body: JSON.stringify({ comment }),
+      credentials: 'include'
     });
 
     if (response.ok) {

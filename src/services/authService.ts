@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { console } from 'inspector';
 
 // Instância do axios
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/users/', 
+  baseURL: 'http://localhost/api/users/', 
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,7 +13,7 @@ const api = axios.create({
 // Função de login
 export const loginUser = async (Email: string, password: string) => {
   try {
-    const response = await api.post('/token/', { Email, password });
+    const response = await api.post('/login/', { Email, password });
     const { access, refresh } = response.data;
 
     // Armazenando os tokens no cookie
@@ -30,13 +31,7 @@ export const loginUser = async (Email: string, password: string) => {
 // Função para renovar o token de acesso
 export const refreshAccessToken = async () => {
   try {
-    const refreshToken = getRefreshTokenFromCookie();
-    const response = await api.post('/token/refresh/', { refresh: refreshToken });
-
-    // Atualizando o token de acesso
-    const { access } = response.data;
-    api.defaults.headers['Authorization'] = `Bearer ${access}`;
-    document.cookie = `access_token=${access}; Max-Age=3600; path=/`;
+    const response = await api.post('/refresh/',{}, {withCredentials:true});
 
     console.log('Token de acesso renovado');
     return response.data; // Retorna o novo token
@@ -46,27 +41,58 @@ export const refreshAccessToken = async () => {
   }
 };
 
-// Função para obter o refresh token armazenado
-const getRefreshTokenFromCookie = () => {
-  const cookies = document.cookie.split('; ');
-  const refreshToken = cookies.find(cookie => cookie.startsWith('refresh_token='));
-  return refreshToken ? refreshToken.split('=')[1] : null;
+export const logoutUser = async () => {
+  try{
+  const response = await api.get('/logout/');
+  
+  console.log(response.data)
+  }
+  catch(error:any){
+    console.error(error)
+  }
+  };
+
+export const isAuthenticated = async ():Promise<boolean> => {
+  try {
+    // Tenta fazer a requisição para verificar o token
+    const response = await api.get('/verify/');
+    console.log('Token válido:', response.data);
+
+    return true;  // Retorna true se o token for válido
+
+  } catch (error:any) {
+    console.error('Erro na verificação do token:', error.response ? error.response.data : error.message);
+
+    if (error.response && error.response.status === 401) {
+      // Se falhar devido a erro 401, tenta fazer o refresh do token
+      try {
+        const refreshResponse = await api.post('/refresh/'); // Usando a mesma instância do axios para refresh
+        console.log('Token atualizado:', refreshResponse.data);
+
+        // Após o refresh, tenta verificar o token novamente
+        return isAuthenticated();  // Chama novamente a função de verificação
+
+      } catch (refreshError) {
+        console.error('Erro no refresh do token.');
+        return false;  // Retorna false se o refresh falhar
+      }
+    } else {
+      return false;  // Retorna false se a verificação falhar
+    }
+  }
 };
 
-// Função para obter o access token armazenado
-const getAccessTokenFromCookie = () => {
-  const cookies = document.cookie.split('; ');
-  const accessToken = cookies.find(cookie => cookie.startsWith('access_token='));
-  return accessToken ? accessToken.split('=')[1] : null;
+// Função para verificar a autenticação periodicamente
+const checkAuthenticationPeriodically = () => {
+  setInterval(async () => {
+    const isAuthenticatedResponse = await isAuthenticated();
+    
+    if (isAuthenticatedResponse) {
+      console.log('Usuário autenticado.');
+    } else {
+      console.log('Falha na autenticação ou token expirado.');
+    }
+  }, 300000); // 300000 ms = 5 minutos
 };
 
-export const logoutUser = () => {
-  document.cookie = `access_token=; Max-Age=0; path=/; Secure; HttpOnly; SameSite=Strict`;
-  document.cookie = `refresh_token=; Max-Age=0; path=/; Secure; HttpOnly; SameSite=Strict`;
-  console.log('Usuário deslogado');
-};
-
-export const isAuthenticated = () => {
-  const token = getAccessTokenFromCookie();
-  return !!token; // Retorna true se o token de acesso existir
-};
+checkAuthenticationPeriodically();

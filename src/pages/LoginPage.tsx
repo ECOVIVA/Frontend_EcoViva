@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
       const getProfileData = async (username: any) => {
         try {
           const response = await axios.get(`http://localhost:8000/api/detail/${username}/`, {
-            headers: { Authorization: `Bearer ${access_token}` },
+            withCredentials: true,
           });
           return response.data; // Retorna os dados da resposta, caso precise usar
         } catch (error) {
