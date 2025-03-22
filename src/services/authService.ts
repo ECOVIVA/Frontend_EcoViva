@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { console } from 'inspector';
 
 // Instância do axios
 const api = axios.create({
-  baseURL: 'http://localhost/api/users/', 
+  baseURL: 'http://127.0.0.1:8000/api/users/', 
   headers: {
     'Content-Type': 'application/json',
   },
@@ -41,18 +40,20 @@ export const refreshAccessToken = async () => {
   }
 };
 
-export const logoutUser = async () => {
-  try{
-  const response = await api.get('/logout/');
-  
-  console.log(response.data)
-  }
-  catch(error:any){
-    console.error(error)
-  }
-  };
 
-export const isAuthenticated = async ():Promise<boolean> => {
+// Função para obter o access token armazenado
+const getAccessTokenFromCookie = () => {
+  const cookies = document.cookie.split('; ');
+  const accessToken = cookies.find(cookie => cookie.startsWith('access_token='));
+  return accessToken ? accessToken.split('=')[1] : null;
+};
+
+export const logoutUser = () => {
+  
+  console.log('Usuário deslogado');
+};
+
+export const isAuthenticated = async () => {
   try {
     // Tenta fazer a requisição para verificar o token
     const response = await api.get('/verify/');
@@ -60,7 +61,7 @@ export const isAuthenticated = async ():Promise<boolean> => {
 
     return true;  // Retorna true se o token for válido
 
-  } catch (error:any) {
+  } catch (error) {
     console.error('Erro na verificação do token:', error.response ? error.response.data : error.message);
 
     if (error.response && error.response.status === 401) {
@@ -73,7 +74,7 @@ export const isAuthenticated = async ():Promise<boolean> => {
         return isAuthenticated();  // Chama novamente a função de verificação
 
       } catch (refreshError) {
-        console.error('Erro no refresh do token.');
+        console.error('Erro no refresh do token:', refreshError.response ? refreshError.response.data : refreshError.message);
         return false;  // Retorna false se o refresh falhar
       }
     } else {
@@ -81,18 +82,3 @@ export const isAuthenticated = async ():Promise<boolean> => {
     }
   }
 };
-
-// Função para verificar a autenticação periodicamente
-const checkAuthenticationPeriodically = () => {
-  setInterval(async () => {
-    const isAuthenticatedResponse = await isAuthenticated();
-    
-    if (isAuthenticatedResponse) {
-      console.log('Usuário autenticado.');
-    } else {
-      console.log('Falha na autenticação ou token expirado.');
-    }
-  }, 300000); // 300000 ms = 5 minutos
-};
-
-checkAuthenticationPeriodically();

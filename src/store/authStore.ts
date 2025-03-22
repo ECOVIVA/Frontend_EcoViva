@@ -16,7 +16,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     try {
       const response = await loginUser(email, password);
-      if (response?.token) {
+      if (response) {
         const user: UserType = {
           id: response.user.id,
           username: response.user.username,
@@ -45,7 +45,7 @@ console.log('User logged in:', user);
     set({ user: null, isAuthenticated: false });
     localStorage.removeItem('ecovivaUser');
   },
-  
+
   initAuth: () => {
     const storedUser = localStorage.getItem('ecovivaUser');
     console.log('Stored User in localStorage:', storedUser);  // Adicionei este log para depuração
