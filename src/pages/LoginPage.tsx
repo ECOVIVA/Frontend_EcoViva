@@ -8,7 +8,7 @@ import axios from 'axios';
 const LoginPage: React.FC = () => {
   const [Email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Adicionando estado para mostrar/esconder senha
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
     return <div>Contexto não encontrado. Verifique se você envolveu o componente com o AuthProvider.</div>;
   }
 
-  const { login } = authContext;
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,24 +35,26 @@ const LoginPage: React.FC = () => {
 
       const { access_token, refresh_token } = response.data;
 
-      // Passando o token correto para o login
-      login(access_token);
+      
+      authContext.login(access_token, {
+        email: Email, name: 'Nome do Usuário',
+        id: ''
+      });
 
-      // Armazenando os tokens no localStorage
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
 
-      // Após o login, verificando o perfil do usuário
-      const getProfileData = async (username: any) => {
-        try {
-          const response = await axios.get(`http://localhost:8000/api/detail/${username}/`, {
-            headers: { Authorization: `Bearer ${access_token}` },
-          });
-          return response.data; // Retorna os dados da resposta, caso precise usar
-        } catch (error) {
-          console.error('Erro ao buscar dados do perfil:', error);
-        }
-      };
+             // Após o login, verificando o perfil do usuário
+            //const getProfileData = async (username: any) => {
+           //try {
+          //  const response = await axios.get(`http://localhost:8000/api/detail/${username}/`, {
+         //withCredentials: true,
+        //});
+       //  return response.data; // Retorna os dados da resposta, caso precise usar
+     //} catch (error) {
+    //console.error('Erro ao buscar dados do perfil:', error);
+  //}
+//};
 
        
 

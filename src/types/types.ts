@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 // types/types.ts
 export interface User {
   id: number;
@@ -11,6 +13,8 @@ export interface User {
 }
 
 export interface Rank {
+  description: ReactNode;
+  icon: ReactNode;
   id: number;
   name: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
@@ -19,6 +23,8 @@ export interface Rank {
 }
 
 export interface CheckIn {
+  date: string;
+  userId: string;
   id: string;
   comment: string;
   timestamp: Date;

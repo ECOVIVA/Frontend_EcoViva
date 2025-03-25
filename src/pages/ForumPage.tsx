@@ -307,3 +307,4 @@ const ForumPage: React.FC = () => {
 };
 
 export default ForumPage;
+

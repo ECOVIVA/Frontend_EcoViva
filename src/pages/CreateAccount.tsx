@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Leaf, Mail, Lock, Eye, EyeOff, User, Phone, Upload } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from '../components/AuthContext'; // Mantenha o import do AuthContext
 
 function App() {
   const navigator = useNavigate();
@@ -22,6 +22,9 @@ function App() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Não redefine o AuthContext, apenas use o contexto
+  const authContext = useContext(AuthContext); // Aqui, apenas utilize useContext(AuthContext)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -34,6 +37,10 @@ function App() {
       return;
     }
 
+    if (!authContext) {
+      return <div>Contexto não encontrado. Verifique se você envolveu o componente com o AuthProvider.</div>;
+    }
+
     try {
       // Enviando dados de texto (usuário) como JSON
       const userData = {
@@ -44,30 +51,37 @@ function App() {
         phone: formData.phone,
         password: formData.password,
       };
-     
-    
+
       const response = await axios.post('http://127.0.0.1:8000/api/users/create/', userData, {
         headers: {
           'Content-Type': 'application/json',
         },
         withCredentials: true, // Se você estiver lidando com cookies de sessão
       });
-      
-   if (response.status === 201) {
-      // Se houver uma foto, fazer o upload
-      if (formData.photo) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("photo", formData.photo);
 
-        await axios.post(
-          `http://127.0.0.1:8000/api/users/upload-photo/`, // Usando o ID em vez do username
-          formDataToSend,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true,
-          }
-        );
-      }
+      if (response.status === 201) {
+        // Se houver uma foto, fazer o upload
+        if (formData.photo) {
+          const formDataToSend = new FormData();
+          formDataToSend.append("photo", formData.photo);
+
+          await axios.post(
+            `http://127.0.0.1:8000/api/users/upload-photo/`, // Usando o ID em vez do username
+            formDataToSend,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+              withCredentials: true,
+            }
+          );
+        }
+
+        // Supondo que o response contenha o token e os dados do usuário
+        const token = response.data.token; // Ajuste de acordo com a resposta da API
+        const userDataFromApi = response.data.user; // Ajuste de acordo com a resposta da API
+
+        // Chama o login para atualizar o estado do AuthContext
+        authContext.login(token, userDataFromApi); // Atualiza o estado do AuthContext com o usuário e token
+
         alert("Usuário cadastrado com sucesso!");
         navigator('/CheckInpage');
       }
@@ -84,7 +98,7 @@ function App() {
       setFormData((prev) => ({ ...prev, photo: e.target.files![0] }));
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
